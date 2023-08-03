@@ -4,7 +4,7 @@ This script is used to convert a manga book, which is a bunch of image files lik
 
 ## How-to
 
-Suppose the book is downloaded into `~/Downloads` directory and has the following structure:
+Suppose the book is downloaded into `/home/myuser/Downloads` directory and has the following structure:
 
 ```
 MyBook
@@ -19,7 +19,7 @@ MyBook
 
 Then, open Terminal and run:
 ```
-$ ./manga2pdf.sh "~/Downloads/MyBook"
+$ ./manga2pdf.sh "/home/myuser/Downloads/MyBook"
 ```
 
 ### Converting specific chapters
