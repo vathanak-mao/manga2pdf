@@ -2,8 +2,6 @@
 
 This script is used to convert a manga book, which is a bunch of image files like JPG, downloaded by Hakuneko program (from mangasee123.com).
 
-<img src="https://github.com/vathanak-mao/winctrl/blob/main/.github/demo.gif" width="80%"/>
-
 ## How-to
 
 Suppose the book is downloaded into ~/Downloads directory and has the following structure:
