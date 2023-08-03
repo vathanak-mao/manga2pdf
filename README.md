@@ -4,9 +4,10 @@ This script is used to convert a manga book, which is a bunch of image files lik
 
 ## How-to
 
-Suppose the book is downloaded into ~/Downloads directory and has the following structure:
+Suppose the book is downloaded into `~/Downloads` directory and has the following structure:
 
-	MyBook
+```
+MyBook
   |__ Chapter 1
       |__ 01.jpg
       |__ 02.jpg
@@ -14,6 +15,15 @@ Suppose the book is downloaded into ~/Downloads directory and has the following 
   |__ Chapter 2
       |__ 01.jpg
       |__ 02.jpg
+```
 
+Then, open Terminal and run:
+```
+$ ./manga2pdf.sh "~/Downloads/MyBook"
+```
 
-
+### Converting specific chapters
+```
+$ ./manga2pdf.sh "~/Downloads/MyBook" -from 1 -to 5
+```
+This is helpful if the book has more than 100 chapters.
