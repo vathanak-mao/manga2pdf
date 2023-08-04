@@ -25,6 +25,7 @@ fi
 
 from=1
 to=${#chapternames[@]}
+merge=false
 
 argcnt=("$#")
 argval=("$@")
@@ -47,7 +48,11 @@ for (( i=0; i<argcnt; i++ )); do
 			exit 1;
 		fi	
 	fi
+	if [[ ${argval[i]} == "--merge" ]]; then
+		merge=true	
+	fi
 done
+
 if [[ to -lt from ]]; then
 	echo "[ERR] The argument 'to' is less than 'from'."
 	exit 1;
@@ -55,7 +60,8 @@ fi
 
 echo "[DEB] from=$from, to=$to"
 
-## Loop through all chapters
+chapter_pdfs=""
+## Loop through all chapters to create a PDF file for each chapter
 for (( idx=from ; idx<=to ; idx++ )); do
 	echo $(pwd)
 	## Get all file names (pages) in side the chapter directory
@@ -63,11 +69,23 @@ for (( idx=from ; idx<=to ; idx++ )); do
 	echo "[DEB] pagenames=$pagenames"
 	
 	## The name of output PDF file (a chapter)
-	outputname="${chapternames[idx-1]}.pdf"
+	## The tr command remove spaces from the names or the convert command will fail when merging.
+	outputname=$( echo "${chapternames[idx-1]}.pdf" | tr -d "[:space:]" )
+	echo "[DEB] outputname=$outputname"
 	
-	## Merge all pages of the chapter into a single PDF file
+	## Merge pages of a chapter into a single PDF file
 	cd "./${chapternames[idx-1]}"
 	convert -quality 90 $pagenames "../${outputname}" && echo "'${outputname}' created."
 	cd ".." 
+	
+	chapter_pdfs+="./${outputname}\n" ## When merging chapters, the convert command needs this format
 done
+echo "[DEB] chapfiles=$chapter_pdfs"
 
+## Merge multiple chapters into a single PDF file
+if [[ $merge == true ]]; then
+	outputname=$( echo "Chapter $from-$to.pdf" | tr -d "[:space:]" )
+	chapfiles=$(echo -e $chapter_pdfs) ## interpret '\n' chars or the convert command fails
+	
+	cd "$1" && convert -quality 90 $chapfiles "./${outputname}" && echo "'${outputname}' created."
+fi
