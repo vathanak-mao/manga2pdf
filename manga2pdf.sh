@@ -9,11 +9,13 @@ else
 	echo "Changed directory to $1"
 fi
 
+##
 ## -mindepth -- to remove "." from the output
 ## -printf -- to remove "./" from and to add ',' as separator between the output directory names
 ## -maxdepth -- to show only direct child directories
 ## The "sort -V" command sorts lines of text
 ## The "tr" command translates/replaces "\n" with ":" cause IFS="\n" does not work when splitting string into array
+##
 dirnames=$(find . -mindepth 1 -maxdepth 1 -type d -name '*' -printf '%P\n' | sort -V | tr "\n" ":") 
 echo "[DEB] Directories: $dirnames"
 
@@ -27,11 +29,13 @@ from=1
 to=${#chapternames[@]}
 merge=false
 
+##
+## Obtain the command-line arguments' values 
+##
 argcnt=("$#")
 argval=("$@")
 echo "[DEB] Command-line arguments: ${argval[@]}"
 
-## Validate and obtain arguments' values
 for (( i=0; i<argcnt; i++ )); do
 	if [[ ${argval[i]} == "-from" || ${argval[i]} == "-to" ]]; then
 		if [[ ${argval[i+1]} =~ ^[0-9]+$ ]]; then
@@ -52,6 +56,9 @@ for (( i=0; i<argcnt; i++ )); do
 	fi
 done
 
+##
+## Validate the command-line arguments 
+##
 if [[ to -le 0 || from -le 0 || to -lt from ]]; then
 	echo "[ERR] Invalid argument: 'to' is less than 'from' or either of them is less than or equal zero."
 	exit 1;
@@ -60,13 +67,13 @@ if [[ to -gt ${#chapternames[@]} || from -gt ${#chapternames[@]} ]]; then
 	echo "[ERR] Invalid arugment: either 'to' or 'from' is greater than the number of chapters [${#chapternames[@]}]."
 	exit 1;
 fi
-
 echo "[DEB] from=$from, to=$to"
 
+## 
+## Create a PDF file for each chapter
+## 
 chapter_pdfs=""
-## Loop through all chapters to create a PDF file for each chapter
-for (( idx=from ; idx<=to ; idx++ )); do
-	echo $(pwd)
+for (( idx=from ; idx<=to ; idx++ )); do ## Loop through all chapters
 	## Get all file names (pages) in side the chapter directory
 	pagenames=$(find "./${chapternames[idx-1]}" -type f -name '*.png' -or -name '*.jpg' -printf './%P\n' | sort -V)
 	echo "[DEB] pagenames=$pagenames"
@@ -85,7 +92,9 @@ for (( idx=from ; idx<=to ; idx++ )); do
 done
 echo "[DEB] chapfiles=$chapter_pdfs"
 
+##
 ## Merge multiple chapters (PDFs) into a single PDF file
+##
 if [[ $merge == true ]]; then
 	outputname=$( echo "Chapter $from-$to.pdf" | tr -d "[:space:]" )
 	chapfiles=$(echo -e $chapter_pdfs) ## interpret '\n' chars or the convert command fails
