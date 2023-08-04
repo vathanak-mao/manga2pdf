@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 if [[ -z $1 ]]; then
 	echo "Please specifiy the book directory's path!"
 	exit 1
@@ -29,6 +30,7 @@ from=1
 to=${#chapternames[@]}
 merge=false
 
+
 ##
 ## Obtain the command-line arguments' values 
 ##
@@ -38,7 +40,8 @@ echo "[DEB] Command-line arguments: ${argval[@]}"
 
 for (( i=0; i<argcnt; i++ )); do
 	if [[ ${argval[i]} == "-from" || ${argval[i]} == "-to" ]]; then
-		if [[ ${argval[i+1]} =~ ^[0-9]+$ ]]; then
+		## If positive integer
+		if [[ ${argval[i+1]} =~ (^[1-9]+[1-9]?$)|(^[1-9]+[0-9]+$) ]]; then
 			echo "[DEB] ${argval[i+1]} is an integer"
 			
 			if [[ ${argval[i]} == "-from" ]]; then
@@ -47,7 +50,7 @@ for (( i=0; i<argcnt; i++ )); do
 				to=${argval[i+1]}			
 			fi
 		else 
-			echo "[ERR] The ${argval[i]} argument requires a postive integer greater than zero."
+			echo "[ERR] The ${argval[i]} argument requires a postive integer (greater than zero)."
 			exit 1;
 		fi	
 	fi
@@ -56,18 +59,23 @@ for (( i=0; i<argcnt; i++ )); do
 	fi
 done
 
+
 ##
 ## Validate the command-line arguments 
 ##
-if [[ to -le 0 || from -le 0 || to -lt from ]]; then
-	echo "[ERR] Invalid argument: 'to' is less than 'from' or either of them is less than or equal zero."
+if [[ to -lt from ]]; then
+	echo "[ERR] Invalid argument: 'to' is less than 'from'"
 	exit 1;
 fi
-if [[ to -gt ${#chapternames[@]} || from -gt ${#chapternames[@]} ]]; then
-	echo "[ERR] Invalid arugment: either 'to' or 'from' is greater than the number of chapters [${#chapternames[@]}]."
+if [[ from -gt ${#chapternames[@]} ]]; then
+	echo "[ERR] Invalid arugment: 'from' is greater than the number of chapters [${#chapternames[@]}]."
 	exit 1;
+fi
+if [[ to -gt ${#chapternames[@]} ]]; then
+	to=${#chapternames[@]}
 fi
 echo "[DEB] from=$from, to=$to"
+
 
 ## 
 ## Create a PDF file for each chapter
@@ -79,7 +87,7 @@ for (( idx=from ; idx<=to ; idx++ )); do ## Loop through all chapters
 	echo "[DEB] pagenames=$pagenames"
 	
 	## The name of output PDF file (a chapter)
-	## The tr command remove spaces from the names or the convert command will fail when merging.
+	## The tr command removes spaces from the names so the convert command won't fail when merging.
 	outputname=$( echo "${chapternames[idx-1]}.pdf" | tr -d "[:space:]" )
 	echo "[DEB] outputname=$outputname"
 	
