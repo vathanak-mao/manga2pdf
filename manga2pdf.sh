@@ -1,18 +1,5 @@
 #!/bin/bash
 
-##########################################################################################################
-##													    ##
-## This script is for converting images of a Manga book (downloaded by Hakuneko program) to a PDF file. ##										 
-## It required the 'convert' command from imagemagick-6.q16 pacakge. 				    ##
-##													    ##
-## EXAMPLE:												    ##
-## 	$ cp ~/thisscript.sh ~/Downloads/Tomie							    ##
-##	$ cd ~/Downloads/Tomie										    ##
-##	$ ./thisscript.sh		   	  							    ##
-##										 			    ##
-##########################################################################################################
-
-
 if [[ -z $1 ]]; then
 	echo "Please specifiy the book directory's path!"
 	exit 1
@@ -24,16 +11,17 @@ fi
 
 ## -mindepth -- to remove "." from the output
 ## -printf -- to remove "./" from and to add ',' as separator between the output directory names
-## -maxdepth -- to show only direct child directories 
-dirnames=$(find . -mindepth 1 -maxdepth 1 -type d -name '*' -printf '%P,')
-IFS="," read -r -a chapternames <<< "$dirnames"
+## -maxdepth -- to show only direct child directories
+## The "sort -V" command sorts lines of text
+## The "tr" command translates/replaces "\n" with ":" cause IFS="\n" does not work when splitting string into array
+dirnames=$(find . -mindepth 1 -maxdepth 1 -type d -name '*' -printf '%P\n' | sort -V | tr "\n" ":") 
+echo "[DEB] Directories: $dirnames"
 
-
+IFS=":" read -r -a chapternames <<< "$dirnames" ## Must use IFS=":" cause IFS="\n" does not work
 echo "[DEB] Chapters: ${chapternames[@]}"
 if [[ ${#chapternames[@]} = 0 ]]; then 
 	echo "[WARN] No directory for a chapter found."
 fi
-
 
 from=1
 to=${#chapternames[@]}
@@ -67,18 +55,12 @@ fi
 
 echo "[DEB] from=$from, to=$to"
 
-
-
-
-
-
 ## Loop through all chapters
 for (( idx=from ; idx<=to ; idx++ )); do
 	echo $(pwd)
 	## Get all file names (pages) in side the chapter directory
 	pagenames=$(find "./${chapternames[idx-1]}" -type f -name '*.png' -or -name '*.jpg' -printf './%P\n' | sort -V)
-	#echo "> chapternames=${chapternames}"
-	echo "pagenames=$pagenames"
+	echo "[DEB] pagenames=$pagenames"
 	
 	## The name of output PDF file (a chapter)
 	outputname="${chapternames[idx-1]}.pdf"
