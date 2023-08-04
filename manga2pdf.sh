@@ -31,7 +31,7 @@ argcnt=("$#")
 argval=("$@")
 echo "[DEB] Command-line arguments: ${argval[@]}"
 
-## Validate arguments
+## Validate and obtain arguments' values
 for (( i=0; i<argcnt; i++ )); do
 	if [[ ${argval[i]} == "-from" || ${argval[i]} == "-to" ]]; then
 		if [[ ${argval[i+1]} =~ ^[1-9]+$ ]]; then
@@ -73,7 +73,7 @@ for (( idx=from ; idx<=to ; idx++ )); do
 	outputname=$( echo "${chapternames[idx-1]}.pdf" | tr -d "[:space:]" )
 	echo "[DEB] outputname=$outputname"
 	
-	## Merge pages of a chapter into a single PDF file
+	## Merge pages of a chapter (JPGs) into a single PDF file
 	cd "./${chapternames[idx-1]}"
 	convert -quality 90 $pagenames "../${outputname}" && echo "'${outputname}' created."
 	cd ".." 
@@ -82,7 +82,7 @@ for (( idx=from ; idx<=to ; idx++ )); do
 done
 echo "[DEB] chapfiles=$chapter_pdfs"
 
-## Merge multiple chapters into a single PDF file
+## Merge multiple chapters (PDFs) into a single PDF file
 if [[ $merge == true ]]; then
 	outputname=$( echo "Chapter $from-$to.pdf" | tr -d "[:space:]" )
 	chapfiles=$(echo -e $chapter_pdfs) ## interpret '\n' chars or the convert command fails
