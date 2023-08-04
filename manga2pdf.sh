@@ -34,7 +34,7 @@ echo "[DEB] Command-line arguments: ${argval[@]}"
 ## Validate and obtain arguments' values
 for (( i=0; i<argcnt; i++ )); do
 	if [[ ${argval[i]} == "-from" || ${argval[i]} == "-to" ]]; then
-		if [[ ${argval[i+1]} =~ ^[1-9]+$ ]]; then
+		if [[ ${argval[i+1]} =~ ^[0-9]+$ ]]; then
 			echo "[DEB] ${argval[i+1]} is an integer"
 			
 			if [[ ${argval[i]} == "-from" ]]; then
@@ -42,7 +42,6 @@ for (( i=0; i<argcnt; i++ )); do
 			else
 				to=${argval[i+1]}			
 			fi
-
 		else 
 			echo "[ERR] The ${argval[i]} argument requires a postive integer greater than zero."
 			exit 1;
@@ -53,8 +52,12 @@ for (( i=0; i<argcnt; i++ )); do
 	fi
 done
 
-if [[ to -lt from ]]; then
-	echo "[ERR] The argument 'to' is less than 'from'."
+if [[ to -le 0 || from -le 0 || to -lt from ]]; then
+	echo "[ERR] Invalid argument: 'to' is less than 'from' or either of them is less than or equal zero."
+	exit 1;
+fi
+if [[ to -gt ${#chapternames[@]} || from -gt ${#chapternames[@]} ]]; then
+	echo "[ERR] Invalid arugment: either 'to' or 'from' is greater than the number of chapters [${#chapternames[@]}]."
 	exit 1;
 fi
 
@@ -74,7 +77,7 @@ for (( idx=from ; idx<=to ; idx++ )); do
 	echo "[DEB] outputname=$outputname"
 	
 	## Merge pages of a chapter (JPGs) into a single PDF file
-	cd "./${chapternames[idx-1]}"
+	cd "./${chapternames[idx-1]}" 
 	convert -quality 90 $pagenames "../${outputname}" && echo "'${outputname}' created."
 	cd ".." 
 	
@@ -89,3 +92,5 @@ if [[ $merge == true ]]; then
 	
 	cd "$1" && convert -quality 90 $chapfiles "./${outputname}" && echo "'${outputname}' created."
 fi
+
+
