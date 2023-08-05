@@ -2,12 +2,11 @@
 
 
 if [[ -z $1 ]]; then
-	echo "Please specifiy the book directory's path!"
+	echo "[ERR] Please specifiy the book directory's path!"
 	exit 1
 else
 	## Change directory to the book directory cause all the commands below must run within it.
-	cd "$1"
-	echo "Changed directory to $1"
+	cd "$1" #&& echo "[DEB] Changed directory to $1"
 fi
 
 ##
@@ -18,10 +17,10 @@ fi
 ## The "tr" command translates/replaces "\n" with ":" cause IFS="\n" does not work when splitting string into array
 ##
 dirnames=$(find . -mindepth 1 -maxdepth 1 -type d -name '*' -printf '%P\n' | sort -V | tr "\n" ":") 
-echo "[DEB] Directories: $dirnames"
+#echo "[DEB] Directories: $dirnames"
 
 IFS=":" read -r -a chapternames <<< "$dirnames" ## Must use IFS=":" cause IFS="\n" does not work
-echo "[DEB] Chapters: ${chapternames[@]}"
+#echo "[DEB] Chapters: ${chapternames[@]}"
 if [[ ${#chapternames[@]} = 0 ]]; then 
 	echo "[WARN] No directory for a chapter found."
 fi
@@ -36,13 +35,13 @@ merge=false
 ##
 argcnt=("$#")
 argval=("$@")
-echo "[DEB] Command-line arguments: ${argval[@]}"
+#echo "[DEB] Command-line arguments: ${argval[@]}"
 
 for (( i=0; i<argcnt; i++ )); do
 	if [[ ${argval[i]} == "-from" || ${argval[i]} == "-to" ]]; then
 		## If positive integer
 		if [[ ${argval[i+1]} =~ (^[1-9]+[1-9]?$)|(^[1-9]+[0-9]+$) ]]; then
-			echo "[DEB] ${argval[i+1]} is an integer"
+			#echo "[DEB] ${argval[i+1]} is an integer"
 			
 			if [[ ${argval[i]} == "-from" ]]; then
 				from=${argval[i+1]}
@@ -74,7 +73,7 @@ fi
 if [[ to -gt ${#chapternames[@]} ]]; then
 	to=${#chapternames[@]}
 fi
-echo "[DEB] from=$from, to=$to"
+#echo "[DEB] from=$from, to=$to"
 
 
 ## 
@@ -84,12 +83,12 @@ chapter_pdfs=""
 for (( idx=from ; idx<=to ; idx++ )); do ## Loop through all chapters
 	## Get all file names (pages) in side the chapter directory
 	pagenames=$(find "./${chapternames[idx-1]}" -type f -name '*.png' -or -name '*.jpg' -printf './%P\n' | sort -V)
-	echo "[DEB] pagenames=$pagenames"
+	#echo "[DEB] pagenames=$pagenames"
 	
 	## The name of output PDF file (a chapter)
 	## The tr command removes spaces from the names so the convert command won't fail when merging.
 	outputname=$( echo "${chapternames[idx-1]}.pdf" | tr -d "[:space:]" )
-	echo "[DEB] outputname=$outputname"
+	#echo "[DEB] outputname=$outputname"
 	
 	## Merge pages of a chapter (JPGs) into a single PDF file
 	cd "./${chapternames[idx-1]}" 
@@ -98,7 +97,7 @@ for (( idx=from ; idx<=to ; idx++ )); do ## Loop through all chapters
 	
 	chapter_pdfs+="./${outputname}\n" ## When merging chapters, the convert command needs this format
 done
-echo "[DEB] chapter_pdfs=$chapter_pdfs"
+#echo "[DEB] chapter_pdfs=$chapter_pdfs"
 
 ##
 ## Merge multiple chapters (PDFs) into a single PDF file
