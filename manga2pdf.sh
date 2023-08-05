@@ -93,21 +93,25 @@ for (( idx=from ; idx<=to ; idx++ )); do ## Loop through all chapters
 	
 	## Merge pages of a chapter (JPGs) into a single PDF file
 	cd "./${chapternames[idx-1]}" 
-	convert -quality 90 $pagenames "../${outputname}" && echo "'${outputname}' created."
+	convert -quality 100 $pagenames "../${outputname}" && echo "'${outputname}' created."
 	cd ".." 
 	
 	chapter_pdfs+="./${outputname}\n" ## When merging chapters, the convert command needs this format
 done
-echo "[DEB] chapfiles=$chapter_pdfs"
+echo "[DEB] chapter_pdfs=$chapter_pdfs"
 
 ##
 ## Merge multiple chapters (PDFs) into a single PDF file
 ##
-if [[ $merge == true ]]; then
-	outputname=$( echo "Chapter $from-$to.pdf" | tr -d "[:space:]" )
-	chapfiles=$(echo -e $chapter_pdfs) ## interpret '\n' chars or the convert command fails
+numofchaps=${#chapternames[@]}
+if [[ $merge == true && $numofchaps -gt 0 ]]; then
+	mergefile=${chapternames[0]}
+	[[ $numofchaps -gt 1 ]] && mergefile+="-${chapternames[1]}" 
+	mergefile=$( echo "$mergefile.pdf" | tr -d "[:space:]" )
 	
-	cd "$1" && convert -quality 90 $chapfiles "./${outputname}" && echo "'${outputname}' created."
+	chapfiles=$(echo -e $chapter_pdfs) ## interpret '\n' chars or the convert command will fails
+	
+	cd "$1" && convert -quality 100 $chapfiles "./${mergefile}" && echo "'${mergefile}' created."
 fi
 
 
