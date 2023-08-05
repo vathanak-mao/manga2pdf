@@ -105,8 +105,8 @@ echo "[DEB] chapter_pdfs=$chapter_pdfs"
 ##
 numofchaps=${#chapternames[@]}
 if [[ $merge == true && $numofchaps -gt 0 ]]; then
-	mergefile=${chapternames[0]}
-	[[ $numofchaps -gt 1 ]] && mergefile+="-${chapternames[1]}" 
+	mergefile=${chapternames[from-1]}
+	[[ $numofchaps -gt 1 ]] && mergefile+="-${chapternames[to-1]}" 
 	mergefile=$( echo "$mergefile.pdf" | tr -d "[:space:]" )
 	
 	chapfiles=$(echo -e $chapter_pdfs) ## interpret '\n' chars or the convert command will fails
