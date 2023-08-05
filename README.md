@@ -68,6 +68,6 @@ MyBook
   |__ Chapter1.pdf
   |__ Chapter2.pdf
   |
-  |__ Chapter1-2.pdf
+  |__ Chapter1-Chapter2.pdf
 ```
 
