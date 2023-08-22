@@ -27,7 +27,7 @@ MyBook
 
 Each page in a chapter is a JPG file. To merge and convert them into a single PDF file for each chapter, open Terminal and run:
 ```
-$ ./manga2pdf.sh "/home/myuser/Downloads/___ Manga/MyBook"
+$ ./manga2pdf.sh "/home/myuser/Downloads/MyBook"
 ```
 The output:
 ```
@@ -47,12 +47,12 @@ MyBook
 ### Limit the number of chapters
 To create PDF files for chapter 1, 2, 3, 4, and 5:
 ```
-$ ./manga2pdf.sh /home/myuser/Downloads/___\ Manga/MyBook -from 1 -to 5
+$ ./manga2pdf.sh /home/myuser/Downloads/MyBook -from 1 -to 5
 ```
 ### Merge the output chapters
 To create PDF files for chapter 1, 2, 3, 4, and 5 and then merge them into a single PDF file:
 ```
-$ ./manga2pdf.sh /home/myuser/Downloads/___\ Manga/MyBook -from 1 -to 5 --merge
+$ ./manga2pdf.sh /home/myuser/Downloads/MyBook -from 1 -to 5 --merge
 ```
 The output is:
 ```
